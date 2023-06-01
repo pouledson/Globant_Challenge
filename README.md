@@ -1,3 +1,41 @@
+# Globant’s Data Engineering Coding Challenge
+## Instalación
+
+Para hacer el deploy del paquete:
+- Clonar el repositorio
+- Ejecutar: docker build  -t globant_challenge .
+- docker run  -d -p 5000:5000 globant_challenge
+
+Esto permitirá hacer las consultar post y get a través de la http://127.0.0.1:5000.
+Las pruebas las he realizado con Postman
+
+## Base de datos 
+Se utiliza Bigquery como base de datos, en ella se pueden encontrar 3 tablas:
+    - jobs
+    - departments
+    - hired_employees
+Cada una de ellas tiene la estructura de los csv.
+
+
+## Cómo realizar las consultas
+
+Sectión 1: Ejemplo de consulta
+- http://127.0.0.1:5000/Insertbatch?table=jobs
+    Insertbatch es el Endpoint.
+    table: Es el argumento que recibe el nombre de la tabla en donde se insertarán los datos
+    file: es el argumento que recibe el archivo csv que se insertará en bloque a la tabla referenciada en el parámetro table
+    
+    El resultado de esta consulta será el mensaje de inserción correcta: "Se insertaron los valores correctamente en la tabla ..."
+
+Sección 2:
+Primer requerimiento
+- http://127.0.0.1:5000/Requerimiento1
+    La consulta tendrá como salida el resultado de la query que resuelve el primer requerimiento. Esta salida estará en formato JSON
+Segundo requerimiento 
+- http://127.0.0.1:5000/Requerimiento2
+    La consulta tendrá como salida el resultado de la query que resuelve el segundo requerimiento. Esta salida estará en formato JSON
+
+
 ## Importación de librerias
 Se importan las librerías:Flask,Pandas,Google,werkzeug.
 Y se llama al archivo credentials.py que contiene la información de credenciales para conexión con GCP (Bigquery)
