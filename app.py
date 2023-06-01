@@ -1,9 +1,7 @@
 from flask import Flask,request
 from flask_restful import Resource,Api, reqparse
-import pandas as pd
 from google.cloud import bigquery
 from google.oauth2 import service_account
-from werkzeug.utils import secure_filename
 import credentials
 
 credentials = service_account.Credentials.from_service_account_file(
@@ -35,7 +33,6 @@ class Insertbatch(Resource):
         
         file = request.files.get("file")
         if file and self.archivo_permitido(file.filename):
-            filename = secure_filename(file.filename)
             
             job_config = bigquery.LoadJobConfig(
                 source_format=bigquery.SourceFormat.CSV, skip_leading_rows=0, autodetect=False,field_delimiter=",",

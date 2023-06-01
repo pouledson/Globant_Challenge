@@ -8,7 +8,6 @@ from flask_restful import Resource,Api, reqparse
 import pandas as pd
 from google.cloud import bigquery
 from google.oauth2 import service_account
-from werkzeug.utils import secure_filename
 import credentials
 ```
 ## Importación de credenciales, conexión con API de Bigquery, Flask
@@ -65,11 +64,11 @@ Se captura  el archivo csv
 ```python     
         file = request.files.get("file")
 
-        if file and self.archivo_permitido(file.filename):
-            filename = secure_filename(file.filename)
+        
 ```   
 Se configura la carga del archivo csv a bigquery en modo WRITE_APPEND (se inserta data)
-```python            
+```python      
+        if file and self.archivo_permitido(file.filename):          
             job_config = bigquery.LoadJobConfig(
                 source_format=bigquery.SourceFormat.CSV, skip_leading_rows=0, autodetect=False,field_delimiter=",",
                     write_disposition=bigquery.WriteDisposition.WRITE_APPEND

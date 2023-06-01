@@ -1,8 +1,5 @@
 from app import app
 import unittest
-from unittest import mock
-import io
-from pathlib import Path
 from pathlib import Path
 
 class FlaskTest(unittest.TestCase):
@@ -43,15 +40,22 @@ class FlaskTest(unittest.TestCase):
     def test_APIPostCSV(self):
         tester = app.test_client(self)
         resources = Path(__file__).parent / "data_challenge_files"
-        print(resources / "jobs.csv")
-        response = tester.post("/Insertbatch", data={
-                                "table": "jobs",
+        response = tester.post("/Insertbatch?table=jobs", data={
+                                
                                 "file": (resources / "jobs.csv").open( 'rb'),
         })
 
         statuscode = response.status_code
-        print(response.data)
         self.assertEqual(statuscode, 200)
+
+    #Test Api Post sin archivo adjunto
+    def test_APIPostNotFile(self):
+        tester = app.test_client(self)
+        resources = Path(__file__).parent / "data_challenge_files"
+        response = tester.post("/Insertbatch?table=jobs")
+
+        statuscode = response.get_json()
+        self.assertEqual(statuscode, 'Archivo no encontrado')
   
 if __name__ == "__main__":
   unittest.main()
