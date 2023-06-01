@@ -21,9 +21,9 @@ Cada una de ellas tiene la estructura de los csv.
 
 Sectión 1: Ejemplo de consulta
 - http://127.0.0.1:5000/Insertbatch?table=jobs
-    Insertbatch es el Endpoint.
-    table: Es el argumento que recibe el nombre de la tabla en donde se insertarán los datos
-    file: es el argumento que recibe el archivo csv que se insertará en bloque a la tabla referenciada en el parámetro table
+    Insertbatch es el Endpoint.  
+        -   table: Es el argumento que recibe el nombre de la tabla en donde se insertarán los datos.  
+        -   file: es el argumento que recibe el archivo csv que se insertará en bloque a la tabla referenciada en el parámetro table.  
     
     El resultado de esta consulta será el mensaje de inserción correcta: "Se insertaron los valores correctamente en la tabla ..."
 
