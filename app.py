@@ -18,11 +18,46 @@ client = bigquery.Client(credentials=credentials, project=credentials.project_id
 app = Flask(__name__)
 api = Api(app)
 
+class Insertbatch(Resource):
     
+    def archivo_permitido(self, filename):
+        ALLOWED_EXTENSIONS = {'csv'}
+        return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    def post(self):
+        parser = reqparse.RequestParser()          
+        parser.add_argument('table',type=str, required=True,location='args')
+        args = parser.parse_args()  
+
+        table_id="proyectoglobant2905.proyecto."+str(args['table'])
+        if 'file' not in request.files:
+            return 'Archivo no encontrado'
+        
+        file = request.files.get("file")
+        if file and self.archivo_permitido(file.filename):
+            filename = secure_filename(file.filename)
+            
+            job_config = bigquery.LoadJobConfig(
+                source_format=bigquery.SourceFormat.CSV, skip_leading_rows=0, autodetect=False,field_delimiter=",",
+                    write_disposition=bigquery.WriteDisposition.WRITE_APPEND
+            )
+
+            job = client.load_table_from_file(file.stream, table_id, job_config=job_config)
+                
+            job.result()  
+             
+            client.get_table(table_id)  
+             
+            mensaje=    "Se insertaron los valores correctamente en la tabla  {}".format(
+                     table_id
+                )
+             
+            
+
+        return mensaje    
 
 class Requerimiento1(Resource):
 
-    # methods go here
     
     def get(self):
         query_job = client.query(
@@ -70,13 +105,12 @@ class Requerimiento1(Resource):
                 
                 """
             )
-        job_result = query_job.to_dataframe()  # Waits for job to complete.
-        data = job_result.to_dict()  # convert dataframe to dictionary
-        return {'data': data}, 200  # return data and 200 OK code
+        job_result = query_job.to_dataframe()  
+        data = job_result.to_dict() 
+        return {'data': data}, 200  
     
 class Requerimiento2(Resource):
 
-    # methods go here
     
     def get(self):
         query_job = client.query(
@@ -118,49 +152,12 @@ class Requerimiento2(Resource):
                 
                 """
             )
-        job_result = query_job.to_dataframe()  # Waits for job to complete.
-        data = job_result.to_dict()  # convert dataframe to dictionary
-        return {'data': data}, 200  # return data and 200 OK code
+        job_result = query_job.to_dataframe() 
+        data = job_result.to_dict()  
+        return {'data': data}, 200  
        
 
-class Insertbatch(Resource):
-    
-    def allowed_file(self, filename):
-        ALLOWED_EXTENSIONS = {'csv'}
-        return '.' in filename and \
-            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-    def post(self):
-        # Get Text type fields
-        parser = reqparse.RequestParser()          
-        parser.add_argument('table',type=str, required=True,location='args')
-        args = parser.parse_args()  # parse arguments to dictionary
 
-        table_id="proyectoglobant2905.proyecto."+str(args['table'])
-        if 'file' not in request.files:
-            return 'No file part'
-        
-        file = request.files.get("file")
-        if file and self.allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            
-            job_config = bigquery.LoadJobConfig(
-                source_format=bigquery.SourceFormat.CSV, skip_leading_rows=0, autodetect=False,field_delimiter=",",
-                    write_disposition=bigquery.WriteDisposition.WRITE_APPEND
-            )
-
-            job = client.load_table_from_file(file.stream, table_id, job_config=job_config)
-                
-            job.result()  # Waits for the job to complete.
-             
-            client.get_table(table_id)  # Make an API request.
-             
-            mensaje=    "Se insertaron los valores correctamente en la tabla  {}".format(
-                     table_id
-                )
-             
-            
-
-        return mensaje
 
 api.add_resource(Requerimiento1, '/Requerimiento1')   
 api.add_resource(Requerimiento2, '/Requerimiento2')   
@@ -171,4 +168,4 @@ api.add_resource(Insertbatch, '/Insertbatch')
 
 
 if __name__ == '__main__':
-    app.run(debug=True)  # run our Flask app
+    app.run(debug=True)  
